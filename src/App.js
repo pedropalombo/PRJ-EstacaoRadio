@@ -6,15 +6,25 @@ import './App.css';
 import axios from 'axios';
 
 //TODO: 
-// -> handler for empty searches
+// -> handler for possible errors
+//  |-> empty searches
+//  |-> API failure
+//  |-> Login failure
+//  |-> track not found
+
 // -> tagging for future CSS
 //  |-> turn display into GRID
+//  |-> change font
+//  |-> API failure
 
 // -> add playlist integration
 //  |-> action to add track to playlist
+//  |-> open playlist on browser/app
 //  |-> MAYBE: if search matches album/artist, show those instead of related tracks
 
-// -> add album showing all tracks, when interacted
+//  album interaction
+//  |-> show all tracks
+//    \-> make it possible to add them to playlist
 //  |-> enable user to add track from such screen
 
 
@@ -60,7 +70,7 @@ function App() {
 
   //searches for tracks
   const searchTracks = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); //prevents from reloading browser when forms 'Search' is submitted
 
     //GET request to get all tracks related to search
     const {data} = await axios.get("https://api.spotify.com/v1/search", {
