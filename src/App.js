@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Row, Card } from 'react-bootstrap';
 
 import './App.css';
 import axios from 'axios';
@@ -13,11 +14,12 @@ import axios from 'axios';
 //  |-> track not found
 
 // -> tagging for future CSS
-//  |-> turn display into GRID
+//  |-> turn display into GRID (DONE)
 //  |-> change font
 //  |-> API failure
 
 // -> add playlist integration
+//  |-> users don't have to be logged to listen (?)
 //  |-> action to add track to playlist
 //  |-> open playlist on browser/app
 //  |-> MAYBE: if search matches album/artist, show those instead of related tracks
@@ -88,14 +90,22 @@ function App() {
 
   }
 
+  //gets which track got clicked
+  const logTrack = (track) => {
+    console.log(track)
+  }
+
   //showing tracks on screen
   const renderTracks = () => {
     return tracks.map(track => (
-      <div key={track.id}>
-        {track.album.images.length ? <img width="100%" src={track.album.images[0].url} alt=""/> : <div>No Image</div>}
-        <br/>
-        {track.name}
-      </div>
+      <Card key={track.id} bg={'dark'} onClick={() => logTrack(track)}>
+        <Card.Img src={track.album.images[0].url}/>
+          <Card.Body>
+            <Card.Title>
+              {track.name}
+            </Card.Title>
+          </Card.Body>
+      </Card>
     ))
   }
 
@@ -106,20 +116,26 @@ function App() {
 
         {/* ternary | checks if there's a token | if not, show login msg, otherwise a logout btn */}
         {!token ?
-        <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login to Spotify</a>
-        
-        : <button onClick={logout}>Logout</button>}
+          <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login to Spotify</a>
+
+          : <button onClick={logout}>Logout</button>}
 
         {/* ternary | if there's a token, enables user to make search reqs*/}
         {token ?
           <form onSubmit={searchTracks}>
-            <input type="text" onChange={e => setSearchKey(e.target.value)}/>
+            <input type="text" onChange={e => setSearchKey(e.target.value)} />
             <button type={"submit"}>Search</button>
-          </form>  
+          </form>
 
-        : <h2>Please login first</h2>}
+          : <h2>Please login first</h2>}
 
-        {renderTracks()}
+        <Container>
+          <Row className='mx-2 row row-cols-4'>
+            {renderTracks()}
+          </Row>
+        </Container>
+
+        
       </header>
     </div>
   );
