@@ -13,6 +13,8 @@ import axios from 'axios';
 //  |-> Login failure
 //  |-> track not found
 
+// -> reformat token existance check into fuctions, so it may return the correct HTML
+
 // -> tagging for future CSS
 //  |-> turn display into GRID (DONE)
 //  |-> change font
@@ -37,9 +39,14 @@ function App() {
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
   const RESPONSE_TYPE = "token"
 
+  const BACKEND_URI = "http://localhost:8000";
+
+  const PLAYLIST_ID = "6qhHkcQxP9FspoC5v41416"
+
   const [token, setToken] = useState("");
   const [searchKey, setSearchKey] = useState("");
   const [tracks, setTracks] = useState([]);
+  //const [track, setTrack] = useState("");
 
   //token criation
   // |-> used for identification
@@ -62,6 +69,7 @@ function App() {
     setToken(token)
 
   }, [])
+
 
   //clears LocalStorage and resets token
   const logout = () => {
@@ -92,13 +100,90 @@ function App() {
 
   //gets which track got clicked
   const logTrack = (track) => {
-    console.log(track)
+    console.log("track:", track)
+
+    const data = {
+      artistName: track.artists[0].name,
+      trackName: track.name
+    };
+
+    fetch("http://localhost:8000/log/selectedTrack", { 
+      method: 'POST', 
+      headers: 
+      { 
+        'Content-Type': 'application/json'
+      }, 
+      body: JSON.stringify(data), 
+  }) .then((response) => response.json())
+
+  }
+
+  //gets whih track was searched
+  const logSearch = () => {
+    var searchVal = document.getElementById("searchInput").value;
+
+    console.log("search: ", searchVal);
+
+    const data = {
+      searchInput: searchVal
+    };
+
+    fetch("http://localhost:8000/log/search", { 
+      method: 'POST', 
+      headers: 
+      { 
+        'Content-Type': 'application/json'
+      }, 
+      body: JSON.stringify(data), 
+  }) .then((response) => response.json())
+  }
+
+  //(not yet) adds track to playlist
+  const addTrack = async (track) => {
+    console.log('trigger na addTrack');
+
+    logTrack(track);
+
+      const data = {
+        playlist_id: PLAYLIST_ID,
+        position: 0,
+        uris: ["spotify:track:"+track.id]
+      };
+
+      fetch("https://api.spotify.com/v1/playlists/"+PLAYLIST_ID+"/tracks", { 
+        method: 'POST', 
+        headers: 
+        { 
+          'Content-Type': 'application/json', 
+          "Authorization": `Bearer ${token}` 
+        }, body: JSON.stringify(data), 
+    }) .then((response) => response.json())
+
+    
+
+
+    /*const {data} = await axios.post("https://api.spotify.com/v1/playlists/"+PLAYLIST_ID+"/tracks", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: {
+        playlist_id: PLAYLIST_ID,
+        position: 0,
+        uris: ["spotify:track:"+track.id]
+      }
+    }).then((res) => {
+      console.log(res)
+    })*/
+
+    
+
+    //setTrack(data)
   }
 
   //showing tracks on screen
   const renderTracks = () => {
     return tracks.map(track => (
-      <Card key={track.id} bg={'dark'} onClick={() => logTrack(track)}>
+      <Card key={track.id} bg={'dark'} onClick={() => addTrack(track)}>
         <Card.Img src={track.album.images[0].url}/>
           <Card.Body>
             <Card.Title>
@@ -114,6 +199,9 @@ function App() {
       <header className="App-header">
         <h1>Spotify React</h1>
 
+        {/*playlist iframe*/}
+        <iframe src="https://open.spotify.com/embed/playlist/6qhHkcQxP9FspoC5v41416?utm_source=generator&theme=0" width="50%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+
         {/* ternary | checks if there's a token | if not, show login msg, otherwise a logout btn */}
         {!token ?
           <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login to Spotify</a>
@@ -123,8 +211,10 @@ function App() {
         {/* ternary | if there's a token, enables user to make search reqs*/}
         {token ?
           <form onSubmit={searchTracks}>
-            <input type="text" onChange={e => setSearchKey(e.target.value)} />
-            <button type={"submit"}>Search</button>
+            <input id="searchInput" type="text" onChange={e => setSearchKey(e.target.value)} />
+
+            {/* logs what's been searched, as well as sends input to API */}
+            <button type={"submit"} onClick={() => logSearch()}>Search</button>
           </form>
 
           : <h2>Please login first</h2>}
