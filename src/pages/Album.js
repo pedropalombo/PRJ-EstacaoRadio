@@ -20,7 +20,6 @@ const Album = (props) => {
   const [album, setAlbum] = useState([]);
   const [isLoading, setIsLoading] = useState(true)
   const { albumId } = useParams();
-  //console.log(`ID: ${albumId}`);
 
 
   //getting token + setting album info
@@ -90,8 +89,7 @@ const Album = (props) => {
       }
     });
 
-    console.log("Get tracks return:", artists)
-
+    //returning artists, separated by commas (',')
     return artists;
   }
 
@@ -118,7 +116,6 @@ const Album = (props) => {
                 rounded="true"
                 width={300}
                 height={300}
-                //src={ImagePlaceHolder}
                 src={album.images[1].url} />
             </Figure>
             {/* -| title & description / right |- */}
@@ -139,6 +136,7 @@ const Album = (props) => {
 
         </div>
 
+        {/* -| bottom container / tracks + artists |- */}
         <div class="bottomContainer">
           <Container>
             {renderTracks()}

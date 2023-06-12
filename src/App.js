@@ -51,7 +51,6 @@ const App = () => {
   const [token, setToken] = useState("");
   const [searchKey, setSearchKey] = useState("");
   const [tracks, setTracks] = useState([]);
-  //const [track, setTrack] = useState("");
 
   //token criation
   // |-> used for identification
@@ -63,8 +62,6 @@ const App = () => {
     if(!token && hash) {
       //gets it from URL "access_token" ..
       token = hash.substring(1).split("&").find(elem => elem.startsWith("access_token")).split("=")[1]
-
-      //console.log(token)
 
       window.location.hash = ""
 
