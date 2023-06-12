@@ -5,6 +5,8 @@ import { Container, Row, Card } from 'react-bootstrap';
 
 import './App.css';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+
 
 //TODO: 
 // -> handler for possible errors
@@ -18,6 +20,7 @@ import axios from 'axios';
 // -> tagging for future CSS
 //  |-> turn display into GRID (DONE)
 //  |-> change font
+//  |-> responsive display
 //  |-> API failure
 
 // -> add playlist integration
@@ -27,12 +30,12 @@ import axios from 'axios';
 //  |-> MAYBE: if search matches album/artist, show those instead of related tracks
 
 //  album interaction
-//  |-> show all tracks
+//  |-> show all tracks ✓
 //    \-> make it possible to add them to playlist
 //  |-> enable user to add track from such screen
 
 
-function App() {
+const App = () => {
 
   const CLIENT_ID = "91403a058b644c6594b085cf1dccbdc9"
   const REDIRECT_URI = "http://localhost:3000"
@@ -43,6 +46,8 @@ function App() {
 
   const PLAYLIST_ID = "6qhHkcQxP9FspoC5v41416"
 
+  // const [pos0, pos1] = useState(val_inicial)
+  // |-> pos0 = val | pos1 = method | useState = initial val
   const [token, setToken] = useState("");
   const [searchKey, setSearchKey] = useState("");
   const [tracks, setTracks] = useState([]);
@@ -118,7 +123,7 @@ function App() {
 
   }
 
-  //gets whih track was searched
+  //gets which track was searched
   const logSearch = () => {
     var searchVal = document.getElementById("searchInput").value;
 
@@ -180,16 +185,25 @@ function App() {
     //setTrack(data)
   }
 
+  const openAlbum = (track) => {
+
+  }
+
   //showing tracks on screen
   const renderTracks = () => {
     return tracks.map(track => (
-      <Card key={track.id} bg={'dark'} onClick={() => addTrack(track)}>
-        <Card.Img src={track.album.images[0].url}/>
-          <Card.Body>
-            <Card.Title>
-              {track.name}
-            </Card.Title>
-          </Card.Body>
+      <Card key={track.id} bg={'dark'} onClick={() => logTrack(track)}>
+        <Link to={{
+          pathname: "album/" + track.album.id,
+          data: track
+        }}>
+          <Card.Img src={track.album.images[0].url}/>
+            <Card.Body>
+              <Card.Title>
+                {track.name}
+              </Card.Title>
+            </Card.Body>
+        </Link>
       </Card>
     ))
   }
